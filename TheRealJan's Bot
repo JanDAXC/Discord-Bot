@@ -1,0 +1,650 @@
+// Load up the discord.js library
+const Discord = require("discord.js");
+const client = new Discord.Client();
+const config = require("./config.json");
+const fs      = require('fs')
+const Embeds = require('./embed')
+const CmdParser = require('discordjs-cmds')
+const RichEmbed = require('discord.js').RichEmbed
+const moment = require('./node_modules/moment');
+const ms = require("ms");
+
+
+
+
+// config.token contains the bot's token
+// config.prefix contains the message prefix.
+
+
+client.on("ready", () => {
+  // This event will run if the bot starts, and logs in, successfully.
+  console.log(`Der Bot wurde auf ${client.guilds.size} Servern gestartet!`);
+  // Example of changing the bot's playing game to something useful. `client.user` is what the
+  // docs refer to as the "ClientUser".
+  client.user.setActivity(`!help | ${client.guilds.size} Server`, {
+    type: "STREAMING",
+    url: "https://www.twitch.tv/therealjanmc"
+  });
+});
+
+
+
+client.on("guildCreate", guild => {
+  // This event triggers when the bot joins a guild.
+  console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
+  client.user.setActivity(`Serving ${client.guilds.size} servers`);
+});
+
+client.on("guildDelete", guild => {
+  // this event triggers when the bot is removed from a guild.
+  console.log(`I have been removed from: ${guild.name} (id: ${guild.id})`);
+  client.user.setActivity(`Serving ${client.guilds.size} servers`);
+});
+
+client.on('message', message => {
+  // If the message is "what is my avatar"
+  if (message.content === 'Was ist mein Avatar') {
+    // Send the user's avatar URL
+    message.reply(message.author.avatarURL);
+  }
+});
+
+
+client.on('guildMemberAdd', (member) => {
+
+  const channel = member.guild.channels.find(ch => ch.name === 'willkommen');
+
+  const embed = new Discord.RichEmbed()
+  // Set the title of the field
+  .setTitle(`@${member.user.tag} hat den Server ${member.guild.name} betreten!`)  
+  // Set the color of the embed
+  .setColor(0x7af442)
+  .setThumbnail('https://cdn.discordapp.com/avatars/285418000734093312/eda8385b01000fd055951aa9b4567dd7.png?size=2048')
+  // Set the main content of the embed
+  .setDescription('')
+// Send the embed to the same channel as the message
+channel.send(embed); 
+
+var role = member.guild.roles.find('name', 'Spieler');
+member.addRole(role)
+});
+
+  
+
+client.on("message", (message, member, channel, customEmoji) => {
+
+
+  if (message.author.bot) return;
+
+  
+
+  if(message.content === "Hi") {
+    message.channel.send("Hey, wie gehts?");
+  }
+  if(message.content === "!credits") {
+    message.channel.send({embed: {
+      color: 3447003,
+      author: {
+        name: "Entwickler: TheRealJan",
+        icon_url: client.user.avatarURL
+      },
+      title: "Bot Invite [coming soon...]",
+      url: "",
+      description: "Ein Link um den Bot auf deinen Discord Server zulassen.",
+      fields: [{
+          name: "Twitter",
+          value: "Klicke [hier](http://twitter.com/TheRealJanPC) um auf den Twitter Account zu gelangen!"
+        },
+        {
+          name: "YouTube",
+          value: "Klicke [hier](https://www.youtube.com/channel/UCxqHGV2Hs11i0jvZnbAiHFw?view_as=subscriber) um auf den YouTube Account zu gelangen!"
+        },
+        {
+          name: "Website",
+          value: "Klicke [hier](http://bit.ly/TheRealJan) um auf die Website zu kommen."
+        }
+      ],
+      timestamp: new Date(),
+      footer: {
+        icon_url: client.user.avatarURL,
+        text: "© TheRealJan"
+      }
+    }
+  });
+  }
+  if(message.content === "Gut") {
+    message.channel.send("Super!");
+  }
+
+ 
+  if(message.content === "Kekse")
+    message.channel.send("Wooooooo :cookie:?")
+  if(message.content === "Schlecht") {
+    message.channel.send("Das tut mir leid!");
+  }
+  if(message.author === '502923245519896577') {
+    return;
+  }
+  if(message.content === "!serverinfo") {
+    let embed = new Discord.RichEmbed()
+       .setColor("0xffffff")
+       .setTitle(`${message.guild} Serverinfo!`)
+       .setDescription("__Serverinfo__")
+       .addField("Server ID", message.guild.id, true)
+       .addField("Owner", message.guild.owner, true)
+       .addField("Owner ID", message.guild.ownerID, true)
+       .addField("Rollen", message.guild.roles.size, true)
+       .addField("Region", message.guild.region, true)
+       .addField("Spieler", message.guild.memberCount, true)
+       .setFooter("Server erstellt am:")
+       .setTimestamp(message.guild.createdAt)
+    .setThumbnail(message.guild.iconURL)
+      message.channel.send(embed)
+  }
+  if(message.content === "RIP") {
+    message.channel.send("https://i.imgur.com/w3duR07.png")
+
+  }
+  if(message.content === "!version") {
+  message.channel.send({embed: {
+    color: 3447003,
+    description: "Die Version von dem Bot ist: 0.9.7"
+  }});
+}
+  if(message.content === "@TheRealJan's Bot#6589 wie gehts") {
+    message.channel.send("Super! Dir?")
+  }
+  if(message.content === "!spieler") {
+  message.channel.send({embed: {
+    color: 3447003,
+    description: `Der Server hat: ${message.guild.memberCount} Spieler`
+    }});    
+  }  
+  if(message.content === "!reset") {
+    message.guild.members.get(client.user.id).setNickname("TheRealJan's Bot")
+    message.channel.send("Mein Nickname wurde erfolgreich zurück gesetzt!")
+  }
+  if(message.content === "lecker") {
+  message.channel.send(` `, {
+    files: [
+      "./leckergif.gif"
+    ]
+  })
+}
+if(message.content === "!sound johncena") {
+  message.delete();
+  message.channel.send(` `, {
+    files: [
+      "./johncena.mp3"
+    ]
+  })
+}
+if(message.content === "!sound bruh") {
+  message.delete();
+  message.channel.send(` `, {
+    files: [
+      "./bruh.mp3"
+    ]
+  
+  })
+}
+if(message.content === "!sound badumptss") {
+  message.delete();
+  message.channel.send(` `, {
+    files: [
+      "./badumptss.mp3"
+    ]
+  })
+}
+if(message.content === "!sound airhorn") {
+  message.delete();
+  message.channel.send(` `, {
+    files: [
+      "./airhorn.mp3"
+    ]
+  })
+}
+if(message.content === "!sound sadviolin") {
+  message.delete();
+  message.channel.send(` `, {
+    files: [
+      "./sadviolin.mp3"
+    ]
+  })
+}
+if(message.content === "!sound neindochohh") {
+  message.delete();
+  message.channel.send(` `, {
+    files: [
+      "./neindoch.mp3"
+    ]
+  })
+}
+if(message.content === "!sounds") {
+  message.channel.send({embed: {
+    color: 3447003,
+    author: {
+      name: "Sound-Liste",
+      icon_url: client.user.avatarURL
+    },
+    title: "!sound johncena",
+    description: "Spielt den John Cena Sound ab.",
+    fields: [{
+        name: "!sound bruh",
+        value: "Spielt den Bruh Sound ab!"
+      },
+      {
+        name: "!sound badumptss",
+        value: "Spielt den Badumptss Sound ab!"
+      },
+      {
+        name: "!sound airhorn",
+        value: "Spielt den Airhorn Sound ab!"
+      },
+      {
+        name: "!sound sadviolin",
+        value: "Spielt den Sad Violin Sound ab!"
+      },
+      {
+        name: "!sound neindochohh",
+        value: "Spielt den Nein Doch Ohh Sound ab!"
+      }
+    ],
+    timestamp: new Date(),
+    footer: {
+      icon_url: client.user.avatarURL,
+      text: "© TheRealJan"
+    }
+  }
+});
+}
+if (message.content === "!emojis") {
+  const emojiList = message.guild.emojis.map(e=>e.toString()).join(" ");
+  message.channel.send(emojiList);
+}
+  if(message.content === "rip") {
+    message.channel.send("https://i.imgur.com/w3duR07.png")
+  }
+  if(message.content === "!help") {
+    message.channel.send({embed: {
+      color: 3447003,
+      author: {
+        name: "Hilfe:",
+        icon_url: client.user.avatarURL
+      },
+      title: "Du weißt nicht alle Commands?",
+      description: "Gib einfach !commands in den Chat ein.",
+      fields: [{
+          name: "Du möchtest den Invite Link von dem Bot haben?",
+          value: "Gib !credits ein und klick auf den Link oben."
+        },
+        {
+          name: "Du willst wissen wer der Entwickler ist?",
+          value: "Der Entwickler/Programmierer ist TheRealJan#3022"
+        },
+        {
+          name: "Du hast immer noch probleme?",
+          value: "Sende mir eine Freunschaftsanfrage auf Discord und schreib mich an."
+        }
+      ],
+      timestamp: new Date(),
+      footer: {
+        icon_url: client.user.avatarURL,
+        text: "© TheRealJan"
+      }
+    }
+  });
+  }
+  if(message.content === "!userhelp") {
+    message.channel.send({embed: {
+      color: 3447003,
+      author: {
+        name: "Alle User Features:",
+        icon_url: client.user.avatarURL
+      },
+      title: "!say (Text)",
+      description: "Der Bot Löscht die Nachricht in (Text) und wiederholt die Nachricht.",
+      fields: [{
+          name: "!spieler",
+          value: "Zeigt alle Spieler auf dem Server wo du dich grade befindet an."
+        },
+        {
+          name: "!serverinfo",
+          value: "Zeigt Infos über den Server du dich grade aufhälst."
+        },
+        {
+          name: "!sounds",
+          value: "Zeigt alle Sound möglichkeiten in der Nachricht stehen Commands wo der Bot z.b. eine Sound Datei in den Chat schreibt von z.b. Airhorn"
+        },
+        {
+          name: "Was ist mein Avatar",
+          value: "Schreib das in den Chat und der Bot sendet dein Profilbild in den Chat!"
+        },
+        {
+          name: "Join & Leave Nachricht",
+          value: "Erstellt den Channel willkommen und er sendet da eine Join/Leave Nachricht rein!"
+        }    
+        
+
+      ],
+      timestamp: new Date(),
+      footer: {
+        icon_url: client.user.avatarURL,
+        text: "© TheRealJan"
+      }
+    }
+  });
+  }
+  if(message.content === "!adminhelp") {
+    message.channel.send({embed: {
+      color: 3447003,
+      author: {
+        name: "Alle Admin Features:",
+        icon_url: client.user.avatarURL
+      },
+      title: "!kick & !ban",
+      description: "Schreib !kick/!ban {Hier den Spieler rein} der gebannt/gekickt werden soll.",
+      fields: [{
+          name: "Log-System",
+          value: "Erstell den Channel #log gib dem Bot die Rechte und er schreib rein wenn jemand gebannt wurde."
+        },
+        {
+          name: "Bad-Word System",
+          value: "Wenn jemand ein Böses Wort in einer Nachricht hat wird die gelöscht und er wird gewarnt!"
+        },
+        {
+          name: "Auto-Role",
+          value: "Erstell die Rolle @Spieler und er gibt allen neuen Usern die Rolle!"
+        },
+        {
+          name: "!remove (2-100)",
+          value: "Schreib !remove und die Zahl dahinter und der Bot löscht soviele Nachrichten wie du angegeben hast! Beachte: Er kann nur 2-100 Nachrichten löschen!"
+        }
+      ],
+      timestamp: new Date(),
+      footer: {
+        icon_url: client.user.avatarURL,
+        text: "© TheRealJan"
+      }
+    }
+  });
+  }
+     
+  if(message.content === "!bot-info") {
+   message.channel.send("**__TheRealJan's Bot__** ist am **19.10.2018** enstanden. Der Programmierer heißt auf Discord: __TheRealJan#3022__. Falls du Hilfe benötigs schreib ihn an!")
+  }
+  if(message.content === "!commands") {
+    message.channel.send({embed: {
+      color: 3447003,
+      author: {
+        name: "Commands:",
+        icon_url: client.user.avatarURL
+      },
+      title: "!adminhelp",
+      description: "Mit dem Command siehst du alle Admin Features!",
+      fields: [{
+          name: "!userhelp",
+          value: "Mit dem Command siehst du alle User Features!"
+        }
+ 
+      ],
+      timestamp: new Date(),
+      footer: {
+        icon_url: client.user.avatarURL,
+        text: "© TheRealJan"
+      }
+    }
+  });
+  }
+});
+
+client.on('guildCreate', guild => {
+   guild.defaultChannel.sendMessage(`Danke für's einladen, gib !help ein falls du Hilfe brauchst!`);
+
+});
+client.on('channelCreate', (channel, message) => {
+  const embed = new Discord.RichEmbed()
+  .setTitle(`The Channel **${channel.name}** was created!`)
+  .setColor(0x00ff1d)
+  .setDescription(`Der Channel wurde erstellt am: ${moment.parseZone(channel.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+  .setFooter('Log-System')
+  channel.guild.channels.get('503928108962021418').send(embed);
+  
+});
+client.on('roleCreate', (role, message) => {
+const embed = new Discord.RichEmbed()
+.setTitle(`Die Rolle **${role.name}** wurde erstellt!`)
+.setColor(0x00ff1d)
+.setDescription(`Die Rolle wurde erstellt am: ${moment.parseZone(role.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+.setFooter('Log-System')
+role.guild.channels.get('503928108962021418').send(embed);
+
+});
+client.on('roleDelete', (role, message) => {
+  const embed = new Discord.RichEmbed()
+  .setTitle(`Die Rolle **${role.name}** wurde gelöscht!`)
+  .setColor(0xff0000)
+  .setDescription(`Die Rolle wurde gelöscht am: ${moment.parseZone(role.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+  .setFooter('Log-System')
+  role.guild.channels.get('503928108962021418').send(embed);
+  
+  });
+  client.on('roleUpdate', (role, message) => {
+    const embed = new Discord.RichEmbed()
+    .setTitle(`Die Rolle **${role.name}** wurde bearbeitet!`)
+    .setColor(0x0061ff)
+    .setDescription(`Die Rolle wurde bearbeitet am: ${moment.parseZone(message.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+    .setFooter('Log-System')
+    role.guild.channels.get('503928108962021418').send(embed);
+    
+    });
+    client.on('guildUpdate', (guild, message) => {
+      const embed = new Discord.RichEmbed()
+      .setTitle(`Die Servereinstellungen von ${guild.name} wurden bearbeitet!`)
+      .setColor(0x0061ff)
+      .setDescription(`Die Servereinstellungen wurden bearbeitet am: ${moment.parseZone(message.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+      .setFooter('Log-System')
+      guild.channels.get('503928108962021418').send(embed);
+
+    });
+
+
+  client.on('channelUpdate', (channel, message) => {
+    const embed = new Discord.RichEmbed()
+    .setTitle(`Der Channel **${channel.name}** wurde bearbeitet!`)
+    .setColor(0x0061ff)
+    .setDescription(`Der Channel wurde bearbeitet am: ${moment.parseZone(channel.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+    .setFooter('Log-System')
+    
+    channel.guild.channels.get('503928108962021418').send(embed);
+     
+   });
+
+client.on('channelDelete', (channel, message) => {
+  const embed = new Discord.RichEmbed()
+  .setTitle(`Der Channel **${channel.name}** wurde gelöscht!`)
+  .setColor(0x0061ff)
+  .setDescription(`Der Channel wurde gelöscht am: ${moment.parseZone(channel.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+  .setFooter('Log-System')
+  channel.guild.channels.get('503928108962021418').send(embed);
+  
+});
+
+client.on('guildBanAdd', (guild, user, message) => {
+  const embed = new Discord.RichEmbed()
+  .setTitle(`Der Spieler **${user.tag}** wurde gebannt!`)
+  .setColor(0xff0000)
+  .setDescription(`Der Spieler wurde gebannt am: ${moment.parseZone(message.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+  .setFooter('Log-System')
+  guild.channels.get('503928108962021418').send(embed);
+  
+});
+
+client.on('guildBanRemove', (guild, user, message) => {
+  const embed = new Discord.RichEmbed()
+  .setTitle(`Der Spieler **${user.tag}** wurde entbannt!`)
+  .setColor(0x00ff1d)
+  .setDescription(`Der Spieler wurde entbannt am: ${moment.parseZone(message.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+  .setFooter('Log-System')
+  guild.channels.get('503928108962021418').send(embed);
+  
+});
+
+client.on('memberUpdate', (member, message) => {
+  const embed = new Discord.RichEmbed()
+  .setTitle(`**${member.tag} was updated!`)
+  .setColor(0x0061ff)
+  .setDescription(`gelöscht am: ${moment.parseZone(message.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+  member.guild.channels.get('503928108962021418').send(embed);
+  
+}); 
+client.on('messageDelete', (message) => {
+  const embed = new Discord.RichEmbed()
+  .setTitle(`Die Nachricht ${message.content} von ${message.author.tag} wurde gelöscht!`)
+  .setColor(0xff0000)
+  .setDescription(`Die Nachricht wurde gelöscht am: ${moment.parseZone(message.createdAt).locale('de').format('dd, DD-MM-YYYY, HH:mm')}`)
+  .setFooter('Log-System')
+  message.guild.channels.get('503928108962021418').send(embed);
+  
+});
+
+
+
+client.on('guildMemberRemove', member => {
+  // Send the message to a designated channel on a server:
+  const channel = member.guild.channels.find(ch => ch.name === 'willkommen');
+  // Do nothing if the channel wasn't found on this server
+  if (!channel) return;
+  // Send the message, mentioning the member
+  const embed = new Discord.RichEmbed()
+  // Set the title of the field
+  .setTitle(`@${member.user.tag} hat den Server ${member.guild.name} verlassen!`)  
+  // Set the color of the embed
+  .setColor(0xf20000)
+  .setThumbnail('https://cdn.discordapp.com/avatars/285418000734093312/eda8385b01000fd055951aa9b4567dd7.png?size=2048')
+  // Set the main content of the embed
+  .setDescription('')
+// Send the embed to the same channel as the message
+channel.send(embed); 
+});
+
+
+
+client.on("message", async message => {
+
+  
+
+  if (message.author.bot) return;
+
+  let blacklisted = ['Idiot', 'hurensohn', 'arschloch', 'ficker', 'fick', 'huansohn', 'urensohn', 'lappen', 'noob'];
+
+  let foundInText = false;
+  for (var i in blacklisted) {
+      if (message.content.toLowerCase().includes(blacklisted[i].toLowerCase())) foundInText = true;
+  }
+
+  if (foundInText) {
+    message.delete();
+    message.channel.send(`Bitte benutze nicht solche Wörter, ${message.author}!`)
+
+  }
+
+  // Also good practice to ignore any message that does not start with our prefix,
+  // which is set in the configuration file.
+  if(message.content.indexOf(config.prefix) !== 0) return;
+
+  // Here we separate our "command" name, and our "arguments" for the command.
+  // e.g. if we have the message "+say Is this the real life?" , we'll get the following:
+  // command = say
+  // args = ["Is", "this", "the", "real", "life?"]
+  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+
+  // Let's go with a few common example commands! Feel free to delete or change those.
+
+  if(command === "ping") {
+    // Calculates ping between sending a message and editing it, giving a nice round-trip latency.
+    // The second ping is an average latency between the bot and the websocket server (one-way, not round-trip)
+    const m = await message.channel.send("Ping?");
+    m.edit(`Pong! Der Ping von dem Bot ist: ${Math.round(client.ping)}ms`);
+  }
+
+  if(command === "say") {
+    // makes the bot say something and delete the message. As an example, it's open to anyone to use.
+    // To get the "message" itself we join the `args` back into a string with spaces:
+    const sayMessage = args.join(" ");
+    // Then we delete the command message (sneaky, right?). The catch just ignores the error with a cute smiley thing.
+    message.delete().catch(O_o=>{});
+    // And we get the bot to say the thing:
+    message.channel.send(sayMessage);
+  }
+
+
+  if(command === "kick") {
+    // This command must be limited to mods and admins. In this example we just hardcode the role names.
+    // Please read on Array.some() to understand this bit:
+    // https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/some?
+    if(!message.member.roles.some(r=>["👑TheRealJan👑", "👑Admin👑"].includes(r.name)) )
+      return message.reply("Tut mir leid aber du hast leider keine Rechte dafür!");
+
+    // Let's first check if we have a member and if we can kick them!
+    // message.mentions.members is a collection of people that have been mentioned, as GuildMembers.
+    // We can also support getting the member by ID, which would be args[0]
+    let member = message.mentions.members.first() || message.guild.members.get(args[0]);
+    if(!member)
+      return message.reply("Bitte schreib erst den Namen vom dem Spieler!");
+    if(!member.kickable)
+      return message.reply("Ich kann diesen User nicht kicken weil er eine höhere Rolle hat! Hab ich überhaupt Rechte?");
+
+    // slice(1) removes the first part, which here should be the user mention or ID
+    // join(' ') takes all the various parts to make it a single string.
+    let reason = args.slice(1).join(' ');
+    if(!reason) reason = "Du hast keinen Grund angegeben!";
+
+    // Now, time for a swift kick in the nuts!
+    await member.kick(reason)
+      .catch(error => message.reply(`Tut mir leid ${message.author} ich konnte ihn nicht Kicken weil: ${error}`));
+    message.reply(`${member.user} wurde von ${message.author} gekickt weil: ${reason}`);
+
+  }
+
+
+  if(command === "ban") {
+    // Most of this command is identical to kick, except that here we'll only let admins do it.
+    // In the real world mods could ban too, but this is just an example, right? ;)
+    if(!message.member.roles.some(r=>["👑TheRealJan👑"].includes(r.name)) )
+      return message.reply("Du hast keine Rechte dazu!");
+
+    let member = message.mentions.members.first();
+    if(!member)
+      return message.reply("Bitte schreibe zuerst den Spieler Namen!");
+    if(!member.bannable)
+      return message.reply("Ich kann diesen Spieler nicht Bannen weil er eine höhere Rolle hat! Habe ich überhaupt Rechte?");
+
+    let reason = args.slice(1).join(' ');
+    if(!reason) reason = "Der Grund wurde noch nicht geschrieben!";
+
+    await member.ban(reason)
+      .catch(error => message.reply(`Tut mir leid ${message.author} ich konnte ihn nicht Bannen weil: ${error}`));
+    message.reply(`${member.user} wurde von ${message.author} gebannt weil: ${reason}`);
+  }
+
+  if(command === "remove") {
+    // This command removes all messages from all users in the channel, up to 100.
+
+    // get the delete count, as an actual number.
+    const deleteCount = parseInt(args[0], 10);
+
+    // Ooooh nice, combined conditions. <3
+    if(!deleteCount || deleteCount < 2 || deleteCount > 100)
+      return message.reply("Bitte sag eine Nummer von 2-100 um anzugeben wieviel Nachrichten gelöscht werden!");
+
+    // So we get our messages, and delete them. Simple enough, right?
+    const fetched = await message.channel.fetchMessages({limit: deleteCount});
+    message.channel.send(`Es wurden ${deleteCount} Nachrichten erfolgreich gelöscht!`)
+    message.channel.bulkDelete(fetched)
+      .catch(error => message.reply(`Ich konnte die Nachrichten nicht löschen weil: ${error}`));
+  }
+});
+
+client.login(config.token);

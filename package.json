@@ -1,0 +1,20 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">\r   <a href=\"https://nodejs.org/\">\r     <img alt=\"Node.js\" src=\"https://nodejs.org/static/images/logo-light.svg\" width=\"400\"/>\r   </a>\r </p>",
+  "main": "index.js",
+  "dependencies": {
+    "discord-anti-spam": "^1.1.2",
+    "ffmpeg": "^0.0.4",
+    "discordjs-cmds": "^0.9.0",
+    "ytdl-core": "^0.26.3",
+    "ms": "^2.1.1",
+    "moment": "^2.22.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
